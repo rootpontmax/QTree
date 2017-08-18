@@ -53,8 +53,8 @@ SQuadTreeNode *CQuadTree::CreateNode()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CQuadTree::SplitNode( SQuadTreeNode *pNode, const int level )
 {
-    const int newLevel = level - 1;
-    if( newLevel < 0 )
+    const int childLevel = level - 1;
+    if( childLevel < 0 )
         return;
     
     // Subnodes configuration
@@ -68,8 +68,33 @@ void CQuadTree::SplitNode( SQuadTreeNode *pNode, const int level )
     pNode->pChild[3] = CreateNode();
     
     // Assing parent node for all children
+    const float childDimX = pNode->dimX / 2.0f;
+    const float childDimY = pNode->dimY / 2.0f;
     for( int i = 0; i < 4; ++i )
+    {
         pNode->pChild[i]->pParent = pNode;
+        pNode->pChild[i]->dimX = childDimX;
+        pNode->pChild[i]->dimY = childDimY;
+        pNode->pChild[i]->posX = pNode->posX;
+        pNode->pChild[i]->posY = pNode->posY;
+    }
+    
+    // Move center positions
+    pNode->pChild[0]->posX -= childDimX;
+    pNode->pChild[0]->posY += childDimY;
+    
+    pNode->pChild[1]->posX += childDimX;
+    pNode->pChild[1]->posY += childDimY;
+    
+    pNode->pChild[2]->posX -= childDimX;
+    pNode->pChild[2]->posY -= childDimY;
+    
+    pNode->pChild[3]->posX += childDimX;
+    pNode->pChild[3]->posY -= childDimY;
+    
+    
+    for( int i = 0; i < 4; ++i )
+        SplitNode( pNode->pChild[i], childLevel );
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
