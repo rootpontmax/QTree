@@ -34,7 +34,7 @@ void CQuadTree::Init( const float posX, const float posY,
     
     SplitNode( m_pRoot, levels );
     
-    printf( "Total nodes count: %d\n", totalNodesCount );
+    printf( "Total nodes count: %d/%d\n", (int)m_data.size(), (int)m_data.capacity() );
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const SQuadTreeNode *CQuadTree::GetNodeAtPos( const float x, const float y ) const

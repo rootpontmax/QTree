@@ -6,6 +6,6 @@ git add QTree.cpp
 git add main.h
 git add QTree.xcodeproj
 git add gitCommit.sh
-git commit -m "Git commit cmd has been added"
-git remote add origin https://github.com/rootpontmax/QTree.git
+git commit -m "Quad tree creation has been finished"
+#git remote add origin https://github.com/rootpontmax/QTree.git
 git push -u origin master
