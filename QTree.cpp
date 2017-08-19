@@ -13,11 +13,22 @@ static int CalcTotalNodesCount( const int levels )
     return nodesCount;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-CQuadTree::CQuadTree() :
+SNode::SNode() :
+    pParent( nullptr ),
+    pChild{ nullptr, nullptr, nullptr, nullptr },
+    pData( nullptr ),
+    posX( 0.0f ),
+    posY( 0.0f ),
+    dimX( 0.0f ),
+    dimY( 0.0f ),
+    dbgID( -1 )
+{}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+CTree::CTree() :
     m_pRoot( nullptr )
 {}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CQuadTree::Init( const float posX, const float posY,
+void CTree::Init( const float posX, const float posY,
                       const float dimension, const int levels )
 {
     // Pre-allocate required size
@@ -37,21 +48,25 @@ void CQuadTree::Init( const float posX, const float posY,
     printf( "Total nodes count: %d/%d\n", (int)m_data.size(), (int)m_data.capacity() );
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-const SQuadTreeNode *CQuadTree::GetNodeAtPos( const float x, const float y ) const
+const SNode *CTree::GetNodeAtPos( const float x, const float y ) const
 {
-    return nullptr;
+    return GetLeafRecursive( m_pRoot, x, y );
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-SQuadTreeNode *CQuadTree::CreateNode()
+SNode *CTree::CreateNode()
 {
     assert( ( m_data.size() + 1 ) <= m_data.capacity() );
-    SQuadTreeNode emptyNode;
+    
+    const int dbgID = static_cast< int >( m_data.size() );
+    SNode emptyNode;
     m_data.push_back( emptyNode );
     
-    return &m_data[m_data.size() - 1];
+    SNode *pNode = &m_data[m_data.size() - 1];
+    pNode->dbgID = dbgID;
+    return pNode;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CQuadTree::SplitNode( SQuadTreeNode *pNode, const int level )
+void CTree::SplitNode( SNode *pNode, const int level )
 {
     const int childLevel = level - 1;
     if( childLevel < 0 )
@@ -95,6 +110,38 @@ void CQuadTree::SplitNode( SQuadTreeNode *pNode, const int level )
     
     for( int i = 0; i < 4; ++i )
         SplitNode( pNode->pChild[i], childLevel );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool CTree::IsPointInsideQuad( const SNode *pNode, const float x, const float y ) const
+{
+    assert( pNode );
+    if( x >= ( pNode->posX - pNode->dimX ) &&
+        x <= ( pNode->posX + pNode->dimX ) &&
+        y >= ( pNode->posY - pNode->dimY ) &&
+        y <= ( pNode->posY + pNode->dimY ) )
+        return true;
+    return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+const SNode *CTree::GetLeafRecursive( const SNode *pNode, const float x, const float y ) const
+{
+    assert( pNode );
+    
+    if( !IsPointInsideQuad( pNode, x, y ) )
+        return nullptr;
+    
+    for( int i = 0; i < 4; ++i )
+    {
+        // If this node has no child this node id leaf. Return it
+        if( !pNode->pChild[i] )
+            return pNode;
+        
+        if( IsPointInsideQuad( pNode->pChild[i], x, y ) )
+            return GetLeafRecursive( pNode->pChild[i], x, y );
+    }
+    
+    return nullptr;
+    
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

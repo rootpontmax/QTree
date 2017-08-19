@@ -6,22 +6,26 @@
 #include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-struct SQuadTreeNode
+struct SNode
 {
-    SQuadTreeNode  *pParent;
-    SQuadTreeNode  *pChild[4];
-    void           *pData;
-    float           posX;   // Position of center of QuadNode
-    float           posY;
-    float           dimX;   // Half size of QuadNode
-    float           dimY;
+    SNode();
+    
+    SNode  *pParent;
+    SNode  *pChild[4];
+    void   *pData;
+    float   posX;   // Position of center of QuadNode
+    float   posY;
+    float   dimX;   // Half size of QuadNode
+    float   dimY;
+    
+    int     dbgID;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-class CQuadTree
+class CTree
 {
 public:
 
-    CQuadTree();
+    CTree();
     void Init( const float posX, const float posY, const float dimension, const int levels );
                             // posX - position of center
                             // posY
@@ -29,15 +33,17 @@ public:
                             // levels - levels of hierarchy. 0 means only one node
                             
     // Get node pointer. If point outside any node nullptr is returned
-    const SQuadTreeNode    *GetNodeAtPos( const float x, const float y ) const;
+    const SNode    *GetNodeAtPos( const float x, const float y ) const;
 
 private:
 
-    SQuadTreeNode  *CreateNode();
-    void            SplitNode( SQuadTreeNode *pNode, const int level );
+    SNode          *CreateNode();
+    void            SplitNode( SNode *pNode, const int level );
+    bool            IsPointInsideQuad( const SNode *pNode, const float x, const float y ) const;
+    const SNode    *GetLeafRecursive( const SNode *pNode, const float x, const float y ) const;
 
-    std::vector< SQuadTreeNode >    m_data;
-    SQuadTreeNode                  *m_pRoot;
+    std::vector< SNode >    m_data;
+    SNode                  *m_pRoot;
 
 	
 };
