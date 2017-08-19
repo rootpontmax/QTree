@@ -107,7 +107,7 @@ void CTree::SplitNode( SNode *pNode, const int level )
     pNode->pChild[3]->posX += childDimX;
     pNode->pChild[3]->posY -= childDimY;
     
-    
+    // And recursive split all children
     for( int i = 0; i < 4; ++i )
         SplitNode( pNode->pChild[i], childLevel );
 }
@@ -115,11 +115,13 @@ void CTree::SplitNode( SNode *pNode, const int level )
 bool CTree::IsPointInsideQuad( const SNode *pNode, const float x, const float y ) const
 {
     assert( pNode );
+    
     if( x >= ( pNode->posX - pNode->dimX ) &&
         x <= ( pNode->posX + pNode->dimX ) &&
         y >= ( pNode->posY - pNode->dimY ) &&
         y <= ( pNode->posY + pNode->dimY ) )
         return true;
+    
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,10 +134,11 @@ const SNode *CTree::GetLeafRecursive( const SNode *pNode, const float x, const f
     
     for( int i = 0; i < 4; ++i )
     {
-        // If this node has no child this node id leaf. Return it
+        // If this node has no child this node is a leaf. Return it
         if( !pNode->pChild[i] )
             return pNode;
         
+        // Try to find in children
         if( IsPointInsideQuad( pNode->pChild[i], x, y ) )
             return GetLeafRecursive( pNode->pChild[i], x, y );
     }

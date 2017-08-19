@@ -2,6 +2,14 @@
 #include "QTree.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+static void ReportNode( const SNode *pNode )
+{
+    if( pNode )
+        printf( "[%03d]", pNode->dbgID );
+    else
+        printf( "[---]" );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 int main( int argc, const char * argv[] )
 {
     printf( "Simple quad tree presentation\n" );
@@ -9,34 +17,21 @@ int main( int argc, const char * argv[] )
     const float posX = 0.0f;
     const float posY = 0.0f;
     const float dim = 40.0f;
-    const int level = 4;
-    const float cellSize = dim / 4.0;
+    const int level = 3;
     
     CTree tree;
     tree.Init( posX, posY, dim, level );
     
-    const int fieldSize = 10;
-    const int halfFiedSize = fieldSize / 2;
-    const float halfFieldStep = halfFiedSize * cellSize;
-    
-    for( int i = 0; i < fieldSize; ++i )
+    const float fieldHalfSize = 45.0f;
+    const float fieldStepSize = 10.0f;
+    for( int i = 0; i < 10; ++i )
     {
-        for( int j = 0; j < fieldSize; ++j )
+        for( int j = 0; j < 10; ++j )
         {
-            const float x = ( j * cellSize ) - halfFieldStep;
-            const float y = ( i * cellSize ) - halfFieldStep;
-            
+            const float x = -fieldHalfSize + j * fieldStepSize;
+            const float y = -fieldHalfSize + i * fieldStepSize;
             const SNode *pNode = tree.GetNodeAtPos( x, y );
-            if( pNode )
-            {
-                printf( "[%03d]", pNode->dbgID );
-            }
-            else
-            {
-                printf( "[---]" );
-            }
-            
-            
+            ReportNode( pNode );
         }
         printf( "\n" );
     }
